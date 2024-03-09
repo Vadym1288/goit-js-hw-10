@@ -13,7 +13,6 @@ const timerFields = {
 };
 
 let userSelectedDate;
-let countdownInterval;
 
 const options = {
   enableTime: true,
@@ -63,23 +62,23 @@ function updateTimerInterface({ days, hours, minutes, seconds }) {
   timerFields.minutes.textContent = addLeadingZero(minutes);
   timerFields.seconds.textContent = addLeadingZero(seconds);
 }
+startButton.addEventListener('click', () => {
+  input.disabled = true;
+  startButton.disabled = true;
+  startButton.dataset.start = '';
 
-function startCountdown() {
-  const currentTime = Date.now();
-  const timeDifference = userSelectedDate - currentTime;
-
-  if (timeDifference <= 0) {
-    clearInterval(countdownInterval);
-    updateTimerInterface({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
-    startButton.classList.add("disabled");
-  } else {
-    const timeRemaining = convertMs(timeDifference);
-    updateTimerInterface(timeRemaining);
-  }
-}
-
-startButton.addEventListener("click", () => {
-  countdownInterval = setInterval(startCountdown, 1000);
-  startButton.classList.add("disabled");
+  const idTimer = setInterval(() =>{
+    const timerValue = userSelectedDate - Date.now();
+    if (timerValue >= 0) {
+      updateTimerInterface(convertMs(timerValue));
+      startButton.classList.add("button-start-unactive");
+      startButton.classList.remove("button-start-hover-efect");
+    } else {
+      clearInterval(idTimer);
+      input.disabled = false;
+      startButton.classList.remove("button-start-unactive");
+      startButton.classList.add("button-start-hover-efect");
+      startButton.classList.add("button-start");
+    }
+  },1000)
 });
